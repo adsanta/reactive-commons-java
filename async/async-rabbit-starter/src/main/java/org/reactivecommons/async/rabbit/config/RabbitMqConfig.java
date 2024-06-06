@@ -12,6 +12,7 @@ import org.reactivecommons.async.api.DefaultCommandHandler;
 import org.reactivecommons.async.api.DefaultQueryHandler;
 import org.reactivecommons.async.api.DynamicRegistry;
 import org.reactivecommons.async.api.HandlerRegistry;
+import org.reactivecommons.async.api.handlers.registered.RegisteredCloudEventHandler;
 import org.reactivecommons.async.api.handlers.registered.RegisteredCommandHandler;
 import org.reactivecommons.async.api.handlers.registered.RegisteredEventListener;
 import org.reactivecommons.async.api.handlers.registered.RegisteredQueryHandler;
@@ -234,6 +235,13 @@ public class RabbitMqConfig {
                 .collect(ConcurrentHashMap::new, (map, handler) -> map.put(handler.getPath(), handler),
                         ConcurrentHashMap::putAll);
 
+        final ConcurrentMap<String, RegisteredCloudEventHandler> cloudEventCommandHandlers = registries
+                .values()
+                .stream()
+                .flatMap(r -> r.getCloudEventHandlers().stream())
+                .collect(ConcurrentHashMap::new, (map, handler) -> map.put(handler.getPath(), handler),
+                        ConcurrentHashMap::putAll);
+
         final ConcurrentMap<String, RegisteredEventListener<?>> eventNotificationListener = registries
                 .values()
                 .stream()
@@ -241,7 +249,7 @@ public class RabbitMqConfig {
                 .collect(ConcurrentHashMap::new, (map, handler) -> map.put(handler.getPath(), handler),
                         ConcurrentHashMap::putAll);
 
-        return new HandlerResolver(queryHandlers, eventHandlers, eventsToBind, eventNotificationListener, commandHandlers) {
+        return new HandlerResolver(queryHandlers, eventHandlers, eventsToBind, eventNotificationListener, commandHandlers, cloudEventCommandHandlers) {
             @Override
             @SuppressWarnings("unchecked")
             public <T> RegisteredCommandHandler<T> getCommandHandler(String path) {

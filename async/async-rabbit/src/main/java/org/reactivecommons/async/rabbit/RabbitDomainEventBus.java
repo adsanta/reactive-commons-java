@@ -1,6 +1,7 @@
 package org.reactivecommons.async.rabbit;
 
 import io.cloudevents.CloudEvent;
+import io.cloudevents.core.builder.CloudEventBuilder;
 import org.reactivecommons.async.rabbit.communications.ReactiveMessageSender;
 import org.reactivecommons.async.commons.config.BrokerConfig;
 import org.reactivestreams.Publisher;
@@ -35,6 +36,14 @@ public class RabbitDomainEventBus implements DomainEventBus {
     @Override
     public Publisher<Void> emit(CloudEvent event) {
         return emit(new DomainEvent<>(event.getType(), event.getId(), event));
+    }
+
+    @Override
+    public Publisher<Void> emit(CloudEventBuilder eventBuilder) {
+        var cloudEvent = eventBuilder.build();
+        return sender.sendWithConfirm(cloudEvent, exchange, cloudEvent.getType(),
+                        Collections.emptyMap(), persistentEvents)
+                .onErrorMap(err -> new RuntimeException("Event send failure: " + cloudEvent.getType(), err));
     }
 
 }

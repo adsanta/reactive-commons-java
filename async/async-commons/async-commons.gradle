@@ -11,6 +11,7 @@ dependencies {
     api "io.projectreactor.rabbitmq:reactor-rabbitmq:${reactorRabbitVersion}"
     api 'com.fasterxml.jackson.core:jackson-databind'
     implementation 'commons-io:commons-io:2.11.0'
+    implementation "io.cloudevents:cloudevents-json-jackson:${cloudEventsVersion}"
 
     testImplementation 'io.projectreactor:reactor-test'
 }

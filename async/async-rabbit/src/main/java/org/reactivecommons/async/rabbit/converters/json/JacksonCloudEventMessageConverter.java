@@ -28,6 +28,7 @@ public class JacksonCloudEventMessageConverter implements MessageConverter {
 
     public JacksonCloudEventMessageConverter(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
+        this.objectMapper.registerModule(JsonFormat.getCloudEventJacksonModule());
     }
 
     @Override
@@ -63,6 +64,11 @@ public class JacksonCloudEventMessageConverter implements MessageConverter {
         } catch (IOException e) {
             throw new MessageConversionException(FAILED_TO_CONVERT_MESSAGE_CONTENT, e);
         }
+    }
+
+    @Override
+    public CloudEvent readCloudEvent(Message message) {
+        return readValue(message, CloudEvent.class);
     }
 
     @Override
@@ -165,6 +171,33 @@ public class JacksonCloudEventMessageConverter implements MessageConverter {
         props.setContentLength(bytes.length);
         return new RabbitMessage(bytes, props);
     }
+
+//    private String cloudEventToString(CloudEventV1 cloudEvent) throws JsonProcessingException {
+//        var cloudEventMap = new LinkedHashMap<String, Object>();
+//
+//        cloudEventMap.put("id", cloudEvent.getId());
+//        cloudEventMap.put("type", cloudEvent.getType());
+//        cloudEventMap.put("source", cloudEvent.getSource());
+//        cloudEventMap.put("specversion", cloudEvent.getSpecVersion());
+//
+//        Optional.ofNullable(cloudEvent.getSubject()).ifPresent(value -> cloudEventMap.put("subject", value));
+//        Optional.ofNullable(cloudEvent.getTime()).ifPresent(value -> cloudEventMap.put("time", value));
+//
+//        cloudEvent.getExtensionNames()
+//                .forEach(key -> cloudEventMap.putIfAbsent(key, cloudEvent.getExtension(key)));
+//
+//        Optional.ofNullable(cloudEvent.getDataContentType())
+//                .ifPresent(value -> cloudEventMap.put("datacontenttype", value));
+//
+//        if (Objects.nonNull(cloudEvent.getData())) {
+//            if (cloudEvent.getData() instanceof JsonCloudEventData) {
+//                cloudEventMap.put("data", ((JsonCloudEventData) cloudEvent.getData()).getNode());
+//            } else {
+//                cloudEventMap.put("data", cloudEvent.getData());
+//            }
+//        }
+//        return this.objectMapper.writeValueAsString(cloudEventMap);
+//    }
 
     private <T> T extractData(Class<T> bodyClass, JsonNode node) throws JsonProcessingException {
         T value;

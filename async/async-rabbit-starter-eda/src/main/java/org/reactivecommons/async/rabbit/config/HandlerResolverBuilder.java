@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.reactivecommons.async.api.DefaultCommandHandler;
 import org.reactivecommons.async.api.HandlerRegistry;
+import org.reactivecommons.async.api.handlers.registered.RegisteredCloudEventHandler;
 import org.reactivecommons.async.api.handlers.registered.RegisteredCommandHandler;
 import org.reactivecommons.async.api.handlers.registered.RegisteredEventListener;
 import org.reactivecommons.async.api.handlers.registered.RegisteredQueryHandler;
@@ -38,6 +39,12 @@ public class HandlerResolverBuilder {
                     .collect(ConcurrentHashMap::new, (map, handler) -> map.put(handler.getPath(), handler),
                             ConcurrentHashMap::putAll);
 
+            final ConcurrentMap<String, RegisteredCloudEventHandler> cloudEventCommandHandlers = registries
+                    .values().stream()
+                    .flatMap(r -> r.getCloudEventHandlers().stream())
+                    .collect(ConcurrentHashMap::new, (map, handler) -> map.put(handler.getPath(), handler),
+                            ConcurrentHashMap::putAll);
+
             final ConcurrentMap<String, RegisteredEventListener<?>> eventNotificationListener = registries
                     .values()
                     .stream()
@@ -45,11 +52,18 @@ public class HandlerResolverBuilder {
                     .collect(ConcurrentHashMap::new, (map, handler) -> map.put(handler.getPath(), handler),
                             ConcurrentHashMap::putAll);
 
+            final ConcurrentMap<String, RegisteredCloudEventHandler> cloudEventListener = registries
+                    .values()
+                    .stream()
+                    .flatMap(r -> r.getCloudEventHandlers().stream())
+                    .collect(ConcurrentHashMap::new, (map, handler) -> map.put(handler.getPath(), handler),
+                            ConcurrentHashMap::putAll);
+
             final ConcurrentMap<String, RegisteredEventListener<?>> eventsToBind = getEventsToBind(domain, registries);
 
             final ConcurrentMap<String, RegisteredEventListener<?>> eventHandlers = getEventHandlersWithDynamics(domain, registries);
 
-            return new HandlerResolver(queryHandlers, eventHandlers, eventsToBind, eventNotificationListener, commandHandlers) {
+            return new HandlerResolver(queryHandlers, eventHandlers, eventsToBind, eventNotificationListener, cloudEventListener, cloudEventListener, cloudEventListener, commandHandlers, cloudEventCommandHandlers) {
                 @Override
                 @SuppressWarnings("unchecked")
                 public <T> RegisteredCommandHandler<T> getCommandHandler(String path) {
@@ -63,7 +77,7 @@ public class HandlerResolverBuilder {
         final ConcurrentMap<String, RegisteredEventListener<?>> eventsToBind = getEventsToBind(domain, registries);
         final ConcurrentMap<String, RegisteredEventListener<?>> eventHandlers = getEventHandlersWithDynamics(domain, registries);
 
-        return new HandlerResolver(new ConcurrentHashMap<>(), eventHandlers, eventsToBind, new ConcurrentHashMap<>(), new ConcurrentHashMap<>()) {
+        return new HandlerResolver(new ConcurrentHashMap<>(), eventHandlers, eventsToBind, new ConcurrentHashMap<>(), new ConcurrentHashMap<>(), new ConcurrentHashMap<>(), new ConcurrentHashMap<>(), new ConcurrentHashMap<>(), new ConcurrentHashMap<>()) {
             @Override
             @SuppressWarnings("unchecked")
             public <T> RegisteredCommandHandler<T> getCommandHandler(String path) {

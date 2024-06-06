@@ -8,10 +8,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.reactivecommons.async.api.handlers.CommandHandler;
 import org.reactivecommons.async.api.handlers.EventHandler;
+import org.reactivecommons.async.api.handlers.CloudEventHandler;
 import org.reactivecommons.async.api.handlers.QueryHandler;
 import org.reactivecommons.async.api.handlers.QueryHandlerDelegate;
 import org.reactivecommons.async.api.handlers.registered.RegisteredCommandHandler;
 import org.reactivecommons.async.api.handlers.registered.RegisteredEventListener;
+import org.reactivecommons.async.api.handlers.registered.RegisteredCloudEventHandler;
 import org.reactivecommons.async.api.handlers.registered.RegisteredQueryHandler;
 
 import java.lang.reflect.ParameterizedType;
@@ -29,6 +31,7 @@ public class HandlerRegistry {
     private final List<RegisteredEventListener<?>> eventNotificationListener = new CopyOnWriteArrayList<>();
     private final List<RegisteredQueryHandler<?, ?>> handlers = new CopyOnWriteArrayList<>();
     private final List<RegisteredCommandHandler<?>> commandHandlers = new CopyOnWriteArrayList<>();
+    private final List<RegisteredCloudEventHandler> cloudEventHandlers = new CopyOnWriteArrayList<>();
 
 
     public static HandlerRegistry register() {
@@ -74,6 +77,11 @@ public class HandlerRegistry {
 
     public <T> HandlerRegistry handleCommand(String commandName, CommandHandler<T> fn) {
         commandHandlers.add(new RegisteredCommandHandler<>(commandName, fn, inferGenericParameterType(fn)));
+        return this;
+    }
+
+    public HandlerRegistry handleCommand(String commandName, CloudEventHandler fn) {
+        cloudEventHandlers.add(new RegisteredCloudEventHandler(commandName, fn));
         return this;
     }
 
