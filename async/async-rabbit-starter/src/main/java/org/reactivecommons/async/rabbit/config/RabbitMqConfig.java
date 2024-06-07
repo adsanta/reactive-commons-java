@@ -249,7 +249,14 @@ public class RabbitMqConfig {
                 .collect(ConcurrentHashMap::new, (map, handler) -> map.put(handler.getPath(), handler),
                         ConcurrentHashMap::putAll);
 
-        return new HandlerResolver(queryHandlers, eventHandlers, eventsToBind, eventNotificationListener, commandHandlers, cloudEventCommandHandlers) {
+        final ConcurrentMap<String, RegisteredCloudEventHandler> cloudEventListener = registries
+                .values()
+                .stream()
+                .flatMap(r -> r.getCloudEventHandlers().stream())
+                .collect(ConcurrentHashMap::new, (map, handler) -> map.put(handler.getPath(), handler),
+                        ConcurrentHashMap::putAll);
+
+        return new HandlerResolver(queryHandlers, eventHandlers, eventsToBind, eventNotificationListener, cloudEventListener, cloudEventListener, cloudEventListener, commandHandlers, cloudEventCommandHandlers) {
             @Override
             @SuppressWarnings("unchecked")
             public <T> RegisteredCommandHandler<T> getCommandHandler(String path) {
