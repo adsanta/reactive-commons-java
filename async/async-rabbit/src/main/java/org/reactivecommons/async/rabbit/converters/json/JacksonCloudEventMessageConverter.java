@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.cloudevents.CloudEvent;
 import io.cloudevents.core.provider.EventFormatProvider;
+import io.cloudevents.jackson.JsonCloudEventData;
 import io.cloudevents.jackson.JsonFormat;
 import lombok.Data;
 import org.reactivecommons.api.domain.Command;
@@ -18,6 +19,9 @@ import org.reactivecommons.async.rabbit.RabbitMessage;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import java.util.LinkedHashMap;
+import java.util.Objects;
+import java.util.Optional;
 
 public class JacksonCloudEventMessageConverter implements MessageConverter {
     private static final String CONTENT_TYPE = "application/json";

@@ -1,5 +1,6 @@
 package org.reactivecommons.async.impl.config.annotations;
 
+import org.reactivecommons.async.rabbit.config.CloudCommandListenersConfig;
 import org.reactivecommons.async.rabbit.config.CommandListenersConfig;
 import org.reactivecommons.async.rabbit.config.EventListenersConfig;
 import org.reactivecommons.async.rabbit.config.NotificacionListenersConfig;
@@ -7,7 +8,11 @@ import org.reactivecommons.async.rabbit.config.QueryListenerConfig;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
-import java.lang.annotation.*;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * This annotation enables all messages listeners (Query, Commands, Events). If you want to enable separately, please use
@@ -17,7 +22,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
 @Documented
-@Import({CommandListenersConfig.class, QueryListenerConfig.class, EventListenersConfig.class, NotificacionListenersConfig.class})
+@Import({CommandListenersConfig.class, QueryListenerConfig.class, EventListenersConfig.class, CloudCommandListenersConfig.class, NotificacionListenersConfig.class})
 @Configuration
 public @interface EnableMessageListeners {
 }
