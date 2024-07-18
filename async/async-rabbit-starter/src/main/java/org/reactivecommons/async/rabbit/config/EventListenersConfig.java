@@ -19,10 +19,9 @@ import org.springframework.context.annotation.Import;
 @Import(RabbitMqConfig.class)
 public class EventListenersConfig {
 
+    private final AsyncProps asyncProps;
     @Value("${spring.application.name}")
     private String appName;
-
-    private final AsyncProps asyncProps;
 
     @Bean
     public ApplicationEventListener eventListener(HandlerResolver resolver, MessageConverter messageConverter,
