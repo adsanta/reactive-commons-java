@@ -216,14 +216,14 @@ public class RabbitMqConfig {
                 .collect(ConcurrentHashMap::new, (map, handler) -> map.put(handler.getPath(), handler),
                         ConcurrentHashMap::putAll);
 
-        final ConcurrentMap<String, RegisteredEventListener<?>> eventsToBind = registries
+        final ConcurrentMap<String, RegisteredEventListener<?, ?>> eventsToBind = registries
                 .values().stream()
                 .flatMap(r -> r.getDomainEventListeners().get(DEFAULT_DOMAIN).stream())
                 .collect(ConcurrentHashMap::new, (map, handler) -> map.put(handler.getPath(), handler),
                         ConcurrentHashMap::putAll);
 
         // event handlers and dynamic handlers
-        final ConcurrentMap<String, RegisteredEventListener<?>> eventHandlers = registries
+        final ConcurrentMap<String, RegisteredEventListener<?, ?>> eventHandlers = registries
                 .values().stream()
                 .flatMap(r -> Stream.concat(r.getDomainEventListeners().get(DEFAULT_DOMAIN).stream(), r.getDynamicEventHandlers().stream()))
                 .collect(ConcurrentHashMap::new, (map, handler) -> map.put(handler.getPath(), handler),
@@ -235,28 +235,14 @@ public class RabbitMqConfig {
                 .collect(ConcurrentHashMap::new, (map, handler) -> map.put(handler.getPath(), handler),
                         ConcurrentHashMap::putAll);
 
-        final ConcurrentMap<String, RegisteredCloudEventHandler> cloudEventCommandHandlers = registries
-                .values()
-                .stream()
-                .flatMap(r -> r.getCloudEventHandlers().stream())
-                .collect(ConcurrentHashMap::new, (map, handler) -> map.put(handler.getPath(), handler),
-                        ConcurrentHashMap::putAll);
-
-        final ConcurrentMap<String, RegisteredEventListener<?>> eventNotificationListener = registries
+        final ConcurrentMap<String, RegisteredEventListener<?, ?>> eventNotificationListener = registries
                 .values()
                 .stream()
                 .flatMap(r -> r.getEventNotificationListener().stream())
                 .collect(ConcurrentHashMap::new, (map, handler) -> map.put(handler.getPath(), handler),
                         ConcurrentHashMap::putAll);
 
-        final ConcurrentMap<String, RegisteredCloudEventHandler> cloudEventListener = registries
-                .values()
-                .stream()
-                .flatMap(r -> r.getCloudEventHandlers().stream())
-                .collect(ConcurrentHashMap::new, (map, handler) -> map.put(handler.getPath(), handler),
-                        ConcurrentHashMap::putAll);
-
-        return new HandlerResolver(queryHandlers, eventHandlers, eventsToBind, eventNotificationListener, cloudEventListener, cloudEventListener, cloudEventListener, commandHandlers, cloudEventCommandHandlers) {
+        return new HandlerResolver(queryHandlers, eventHandlers, eventsToBind, eventNotificationListener, commandHandlers) {
             @Override
             @SuppressWarnings("unchecked")
             public <T> RegisteredCommandHandler<T> getCommandHandler(String path) {

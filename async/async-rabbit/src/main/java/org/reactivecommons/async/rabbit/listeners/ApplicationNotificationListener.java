@@ -77,8 +77,8 @@ public class ApplicationNotificationListener extends GenericMessageListener {
 
     @Override
     protected Function<Message, Mono<Object>> rawMessageHandler(String executorPath) {
-        final RegisteredEventListener<Object> eventListener = resolver.getNotificationListener(executorPath);
-        final Function<Message, DomainEvent<Object>> converter = message -> messageConverter
+        final RegisteredEventListener<Object, Object> eventListener = resolver.getNotificationListener(executorPath);
+        final Function<Message, Object> converter = message -> messageConverter
                 .readDomainEvent(message, eventListener.getInputClass());
         final EventExecutor<Object> executor = new EventExecutor<>(eventListener.getHandler(), converter);
         return message -> executor

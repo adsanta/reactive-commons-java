@@ -1,6 +1,5 @@
 package org.reactivecommons.async.impl.config.annotations;
 
-import org.reactivecommons.async.rabbit.config.CloudCommandListenersConfig;
 import org.reactivecommons.async.rabbit.config.CommandListenersConfig;
 import org.reactivecommons.async.rabbit.config.EventListenersConfig;
 import org.reactivecommons.async.rabbit.config.NotificacionListenersConfig;
@@ -22,7 +21,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
 @Documented
-@Import({CommandListenersConfig.class, QueryListenerConfig.class, EventListenersConfig.class, CloudCommandListenersConfig.class, NotificacionListenersConfig.class})
+@Import({CommandListenersConfig.class, QueryListenerConfig.class, EventListenersConfig.class,  NotificacionListenersConfig.class})
 @Configuration
 public @interface EnableMessageListeners {
 }
