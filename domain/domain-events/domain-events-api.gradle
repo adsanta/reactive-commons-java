@@ -4,8 +4,8 @@ ext {
 }
 
 dependencies {
-    api "org.reactivestreams:reactive-streams:${reactiveStreamsVersion}"
-    api "io.cloudevents:cloudevents-api:${cloudEventsVersion}"
+    api 'org.reactivestreams:reactive-streams:1.0.4'
+    api 'io.cloudevents:cloudevents-api:4.0.1'
     compileOnly 'io.projectreactor:reactor-core'
-    implementation "io.cloudevents:cloudevents-json-jackson:${cloudEventsVersion}"
+    implementation 'io.cloudevents:cloudevents-json-jackson:3.0.0'
 }
