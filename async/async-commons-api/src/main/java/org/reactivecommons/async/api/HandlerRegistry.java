@@ -6,11 +6,7 @@ import io.cloudevents.jackson.JsonFormat;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.reactivecommons.async.api.handlers.CloudEventHandler;
-import org.reactivecommons.async.api.handlers.CommandHandler;
-import org.reactivecommons.async.api.handlers.DomainEventHandler;
-import org.reactivecommons.async.api.handlers.QueryHandler;
-import org.reactivecommons.async.api.handlers.QueryHandlerDelegate;
+import org.reactivecommons.async.api.handlers.*;
 import org.reactivecommons.async.api.handlers.registered.RegisteredCommandHandler;
 import org.reactivecommons.async.api.handlers.registered.RegisteredEventListener;
 import org.reactivecommons.async.api.handlers.registered.RegisteredQueryHandler;
@@ -29,7 +25,7 @@ public class HandlerRegistry {
     private final List<RegisteredEventListener<?, ?>> dynamicEventHandlers = new CopyOnWriteArrayList<>();
     private final List<RegisteredEventListener<?, ?>> eventNotificationListener = new CopyOnWriteArrayList<>();
     private final List<RegisteredQueryHandler<?, ?>> handlers = new CopyOnWriteArrayList<>();
-    private final List<RegisteredCommandHandler<?>> commandHandlers = new CopyOnWriteArrayList<>();
+    private final List<RegisteredCommandHandler<?, ?>> commandHandlers = new CopyOnWriteArrayList<>();
 
 
     public static HandlerRegistry register() {
@@ -82,8 +78,13 @@ public class HandlerRegistry {
         return this;
     }
 
-    public <T> HandlerRegistry handleCommand(String commandName, CommandHandler<T> fn, Class<T> commandClass) {
+    public <T> HandlerRegistry handleCommand(String commandName, DomainCommandHandler<T> fn, Class<T> commandClass) {
         commandHandlers.add(new RegisteredCommandHandler<>(commandName, fn, commandClass));
+        return this;
+    }
+
+    public HandlerRegistry handleCloudCommand(String commandName, CloudEventHandler handler) {
+        commandHandlers.add(new RegisteredCommandHandler<>(commandName, handler, CloudEvent.class));
         return this;
     }
 
@@ -122,8 +123,8 @@ public class HandlerRegistry {
     }
 
     @Deprecated
-    public <T> HandlerRegistry handleCommand(String commandName, CommandHandler<T> fn) {
-        commandHandlers.add(new RegisteredCommandHandler<>(commandName, fn, inferGenericParameterType(fn)));
+    public <T> HandlerRegistry handleCommand(String commandName, DomainCommandHandler<T> handler) {
+        commandHandlers.add(new RegisteredCommandHandler<>(commandName, handler, inferGenericParameterType(handler)));
         return this;
     }
 
@@ -144,7 +145,7 @@ public class HandlerRegistry {
     }
 
     @SuppressWarnings("unchecked")
-    private <T> Class<T> inferGenericParameterType(CommandHandler<T> handler) {
+    private <T> Class<T> inferGenericParameterType(DomainCommandHandler<T> handler) {
         try {
             ParameterizedType genericSuperclass = (ParameterizedType) handler.getClass().getGenericInterfaces()[0];
             return (Class<T>) genericSuperclass.getActualTypeArguments()[0];

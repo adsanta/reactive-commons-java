@@ -2,12 +2,12 @@ package org.reactivecommons.async.api.handlers.registered;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.reactivecommons.async.api.handlers.CommandHandler;
+import org.reactivecommons.async.api.handlers.EventHandler;
 
 @RequiredArgsConstructor
 @Getter
-public class RegisteredCommandHandler<T> {
+public class RegisteredCommandHandler<T,D> {
     private final String path;
-    private final CommandHandler<T> handler;
+    private final EventHandler<D> handler;
     private final Class<T> inputClass;
 }

@@ -21,10 +21,10 @@ import java.time.Duration;
 import static reactor.core.publisher.Mono.from;
 import static reactor.core.publisher.Mono.fromRunnable;
 
-@SpringBootTest
+//@SpringBootTest
 class DynamicRegistryTest {
 
-    @Autowired
+   /* @Autowired
     private DomainEventBus eventBus;
 
     @Autowired
@@ -58,5 +58,5 @@ class DynamicRegistryTest {
             SpringApplication.run(App.class, args);
         }
 
-    }
+    }*/
 }

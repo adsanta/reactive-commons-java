@@ -20,7 +20,7 @@ public class HandlerResolver {
     private final Map<String, RegisteredEventListener<?, ?>> eventListeners;
     private final Map<String, RegisteredEventListener<?, ?>> eventsToBind;
     private final Map<String, RegisteredEventListener<?, ?>> eventNotificationListeners;
-    private final Map<String, RegisteredCommandHandler<?>> commandHandlers;
+    private final Map<String, RegisteredCommandHandler<?, ?>> commandHandlers;
 
     private final Matcher matcher = new KeyMatcher();
 
@@ -31,8 +31,8 @@ public class HandlerResolver {
     }
 
     @SuppressWarnings("unchecked")
-    public <T> RegisteredCommandHandler<T> getCommandHandler(String path) {
-        return (RegisteredCommandHandler<T>) commandHandlers
+    public <T, D> RegisteredCommandHandler<T, D> getCommandHandler(String path) {
+        return (RegisteredCommandHandler<T, D>) commandHandlers
                 .computeIfAbsent(path, getMatchHandler(commandHandlers));
     }
 

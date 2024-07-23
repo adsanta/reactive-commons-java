@@ -229,7 +229,7 @@ public class RabbitMqConfig {
                 .collect(ConcurrentHashMap::new, (map, handler) -> map.put(handler.getPath(), handler),
                         ConcurrentHashMap::putAll);
 
-        final ConcurrentMap<String, RegisteredCommandHandler<?>> commandHandlers = registries
+        final ConcurrentMap<String, RegisteredCommandHandler<?, ?>> commandHandlers = registries
                 .values().stream()
                 .flatMap(r -> r.getCommandHandlers().stream())
                 .collect(ConcurrentHashMap::new, (map, handler) -> map.put(handler.getPath(), handler),
@@ -245,8 +245,8 @@ public class RabbitMqConfig {
         return new HandlerResolver(queryHandlers, eventHandlers, eventsToBind, eventNotificationListener, commandHandlers) {
             @Override
             @SuppressWarnings("unchecked")
-            public <T> RegisteredCommandHandler<T> getCommandHandler(String path) {
-                final RegisteredCommandHandler<T> handler = super.getCommandHandler(path);
+            public <T, D> RegisteredCommandHandler<T, D> getCommandHandler(String path) {
+                final RegisteredCommandHandler<T, D> handler = super.getCommandHandler(path);
                 return handler != null ? handler : new RegisteredCommandHandler<>("", defaultCommandHandler, Object.class);
             }
         };
