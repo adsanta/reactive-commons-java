@@ -1,5 +1,6 @@
 package org.reactivecommons.async.rabbit.listeners;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.rabbitmq.client.AMQP;
 import lombok.extern.java.Log;
 import org.reactivecommons.api.domain.Command;
@@ -100,8 +101,11 @@ public class ApplicationCommandListener extends GenericMessageListener {
     }
 
     protected String getExecutorPath(AcknowledgableDelivery msj) {
-        final Command<Object> command = messageConverter.readCommandStructure(RabbitMessage.fromDelivery(msj));
-        return command.getName();
+        RabbitMessage rabbitMessage = RabbitMessage.fromDelivery(msj);
+        JsonNode jsonNode = messageConverter.readValue(rabbitMessage, JsonNode.class);
+        return Optional.ofNullable(jsonNode.get("commandId"))
+                .map(result -> jsonNode.get("name").asText())
+                .orElseGet(() -> jsonNode.get("type").asText());
     }
 
     @Override
